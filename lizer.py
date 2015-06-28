@@ -21,7 +21,7 @@ def wordCount(book):
   #count uniq words using length of list
   uwordcount = len(uwordlist)
   return [wordcount, uwordlist]
-      
+
   return wordcount
   in_file.close()
 
@@ -42,8 +42,8 @@ def uwordcomp(s1, s2):
       common.append(word)
   return(common)
 
-
-def main():
+def twoauthorcomparison():
+  #This function runs when comparing the works of two authors
   #Enter name of books
   book1 = input ("Enter name of first book: ")
   book2 = input ("Enter name of second book: ")
@@ -64,7 +64,7 @@ def main():
   numUs2 = len(uwords2)
   #commonW gives
   commonW = uwordcomp(uwords1, uwords2)
-  
+
   print("")
   print(author1, "wordcount:", wC1, "uniqwords:", numUs1)
   print(author1, "the rate of unique word frequency is", (numUs1/wC1) * 100)
@@ -73,5 +73,25 @@ def main():
   print(author2, "unique word frequency is", (numUs2/wC2) * 100)
   print("")
   print("Unique words in common:", len(commonW))
-  print("") 
+  print("")
+
+def main():
+  #main will be used for asking user purpose and then calling for purpose
+  print("Lizer is an application intended to analyze .txt files")
+  print("")
+  print("For self-analysis, enter 1")
+  print("For multi-author comparison, enter 2")
+  print("Compare with the classics: 3")
+  print("")
+  #unput is what they type next
+  #initializing user input
+  unput = eval(input("Choose an option by using the corresponding number: "))
+  #making sure they're actually selecting something
+  while unput < 1 or unput > 3 or isinstance(unput, float):
+    #the input prompt is generalized for less lines
+    unput = eval(input("Please choose an option by entering an integer between 1 and 3: "))
+  if unput == 1 or unput == 3:
+    print("To be honest, I only have 2 available right now.")
+    print("Initializing multi-author comparison")
+    twoauthorcomparison()
 main()
