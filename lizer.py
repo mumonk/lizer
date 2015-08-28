@@ -42,7 +42,35 @@ def uwordcomp(s1, s2):
       common.append(word)
   return(common)
 
-def twoauthorcomparison():
+def oneAuthorComparison():
+  #Just like two authors, but one
+  book1 = input ("Enter name of first file")
+  book2 = input ("Enter name of second file")
+  #store word counts of files
+  res1 = wordCount(book1)
+  res2 = wordCount(book2)
+  wC1 = res1[0]
+  wC2 = res2[0]
+  #store all unique words
+  uwords1 = res1[1]
+  uwords2 = res2[1]
+  #get len of unique words
+  numUs1 = len(uwords1)
+  numUs2 = len(uwords2)
+  #commonW gives
+  commonW = uwordcomp(uwords1, uwords2)
+
+  print("")
+  print(book1, "wordcount:", wC1, "uniqwords:", numUs1)
+  print(book1, "the rate of unique word frequency is", (numUs1/wC1) * 100)
+  print("")
+  print(book2, "wordcount:", wC2, "uniqwords:", numUs2)
+  print(book2, "unique word frequency is", (numUs2/wC2) * 100)
+  print("")
+  print("Unique words in common:", len(commonW))
+  print("")
+
+def twoAuthorComparison():
   #This function runs when comparing the works of two authors
   #Enter name of books
   book1 = input ("Enter name of first book: ")
@@ -90,8 +118,12 @@ def main():
   while unput < 1 or unput > 3 or isinstance(unput, float):
     #the input prompt is generalized for less lines
     unput = eval(input("Please choose an option by entering an integer between 1 and 3: "))
-  if unput == 1 or unput == 3:
-    print("To be honest, I only have 2 available right now.")
+  if unput == 1:
+    print("Initalizing single-author analysis")
+    oneAuthorComparison()
+  if unput == 3:
+    print("To be honest, I only have 1 and 2 available right now.")
     print("Initializing multi-author comparison")
-    twoauthorcomparison()
+    print("/n")
+    twoAuthorComparison()
 main()
