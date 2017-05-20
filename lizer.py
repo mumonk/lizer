@@ -1,3 +1,5 @@
+#"C:\ProgramData\Anaconda3
+# coding: utf8
 import re
 
 def counter(value, unit):
@@ -5,15 +7,25 @@ def counter(value, unit):
    list = re.findall(value , unit)
    return len(list)
 
+def inRange(item, range):
+    #function takes a given input and checks if is a number within an implicit range
+    #range is specified depending on menu
+    try:
+        tryItem = int(item)
+    except ValueError:
+        return False
+        
+    if tryItem < 1 or tryItem > range:
+        return False
 def wordCount(book):
   results = []
-  in_file = open(book, "r")
+  in_file = open(book, "r", encoding="utf-8")
   wordcount = 0
   uwordlist = []
   uwordcount = 0
   for line in in_file:
     wordcount = wordcount + counter("(\S)", line)
-    #redl is the line split into a list to iter w/out chars
+    #redl is the line split into a list to iterate through, ignoring spare characters
     redline = line.split()
     for entry in redline:
         uwordlist.append(entry)
@@ -113,17 +125,19 @@ def main():
   print("")
   #unput is what they type next
   #initializing user input
-  unput = eval(input("Choose an option by using the corresponding number: "))
-  #making sure they're actually selecting something
-  while unput < 1 or unput > 3 or isinstance(unput, float):
-    #the input prompt is generalized for less lines
-    unput = eval(input("Please choose an option by entering an integer between 1 and 3: "))
+  unput = input("Choose an option by using the corresponding number: ")
+  #making sure they're actually selecting one of three menu items
+  while inRange(unput, 3) is False:
+    unput = input("Choose an option by using the corresponding whole number: ")
+    
+  unput = int(unput)
+  
   if unput == 1:
     print("Initalizing single-author analysis")
     oneAuthorComparison()
   if unput == 3:
     print("To be honest, I only have 1 and 2 available right now.")
     print("Initializing multi-author comparison")
-    print("/n")
+    print("")
     twoAuthorComparison()
 main()
