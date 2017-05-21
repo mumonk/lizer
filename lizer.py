@@ -1,6 +1,8 @@
 #"C:\ProgramData\Anaconda3
 # coding: utf8
 import re
+import random
+import os, sys
 
 def counter(value, unit):
    #find all non-whitespace
@@ -53,91 +55,85 @@ def uwordcomp(s1, s2):
     if word in least and len(word) > 3:
       common.append(word)
   return(common)
-
-def oneAuthorComparison():
-  #Just like two authors, but one
-  book1 = input ("Enter name of first file")
-  book2 = input ("Enter name of second file")
-  #store word counts of files
-  res1 = wordCount(book1)
-  res2 = wordCount(book2)
-  wC1 = res1[0]
-  wC2 = res2[0]
-  #store all unique words
-  uwords1 = res1[1]
-  uwords2 = res2[1]
-  #get len of unique words
-  numUs1 = len(uwords1)
-  numUs2 = len(uwords2)
-  #commonW gives
-  commonW = uwordcomp(uwords1, uwords2)
-
-  print("")
-  print(book1, "wordcount:", wC1, "uniqwords:", numUs1)
-  print(book1, "the rate of unique word frequency is", (numUs1/wC1) * 100)
-  print("")
-  print(book2, "wordcount:", wC2, "uniqwords:", numUs2)
-  print(book2, "unique word frequency is", (numUs2/wC2) * 100)
-  print("")
-  print("Unique words in common:", len(commonW))
-  print("")
-
-def twoAuthorComparison():
-  #This function runs when comparing the works of two authors
-  #Enter name of books
-  book1 = input ("Enter name of first book: ")
-  book2 = input ("Enter name of second book: ")
-
-  #Enter names of authors
-  author1 = input ("Enter last name of first author: ")
-  author2 = input ("Enter last name of second author: ")
-  #store total word counts from results
-  res1 = wordCount(book1)
-  res2 = wordCount(book2)
-  wC1 = res1[0]
-  wC2 = res2[0]
-  #store all unique words
-  uwords1 = res1[1]
-  uwords2 = res2[1]
-  #get len of unique words
-  numUs1 = len(uwords1)
-  numUs2 = len(uwords2)
-  #commonW gives
-  commonW = uwordcomp(uwords1, uwords2)
-
-  print("")
-  print(author1, "wordcount:", wC1, "uniqwords:", numUs1)
-  print(author1, "the rate of unique word frequency is", (numUs1/wC1) * 100)
-  print("")
-  print(author2, "wordcount:", wC2, "uniqwords:", numUs2)
-  print(author2, "unique word frequency is", (numUs2/wC2) * 100)
-  print("")
-  print("Unique words in common:", len(commonW))
-  print("")
+def classicsComparison():
+    #listing all .txt. in the classics directory
+    currentFolder = os.getcwd()
+    currentFilenames = []
+    counter = 1
+    print("Plaintext files in project folder:")
+    for alphaFile in os.listdir(currentFolder):
+        if alphaFile[-4:] == '.txt' and alphaFile!= 'IgnoredWords.txt':
+            currentFilenames.append(alphaFile)
+            print(str(counter) + '. ' + alphaFile)
+            counter += 1
+    #listing all .txt in the Classics directory
+    
+    classicsFolder = currentFolder + "/Classics"
+    print("\n----------")
+    print("A selection of classic writings from the Public Domain:")
+    for betaFile in os.listdir(classicsFolder):
+        if betaFile[-4:] == ".txt":
+            currentFilenames.append(betaFile)
+            print(str(counter) + '. ' + betaFile)
+            counter += 1
+    titleOne = input("Enter the number of the first file to analyze: ")
+    while inRange(titleOne, len(currentFilenames)) is False:
+        titleOne = input("Choose an option by using the corresponding whole number: ")
+    #subtraction to fit it to a zero index.
+    titleOne = int(titleOne) - 1
+    
+    titleTwo = input("Enter the number of the second file to analyze: ")
+    while inRange(titleTwo, len(currentFilenames)) is False:
+        titleTwo = input("Choose an option by using the corresponding whole number: ")
+    
+    titleTwo = int(titleTwo) - 1
+    book1 = currentFilenames[titleOne]
+    book2 = currentFilenames[titleTwo]
+    #determine whether to path the classics folder
+    package_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    if len(currentFilenames) > 6:
+        #minus seven to re-index to zero
+        if titleOne <= len(currentFilenames) - 6:
+            book1 =  '/Classics/' + currentFilenames[titleOne]
+        if titleTwo <= len(currentFilenames) - 6:
+            book2 = '/Classics/' + currentFilenames[titleTwo]
+            
+    else:
+        book1 =  'Classics/' + currentFilenames[titleOne]
+        book2 = 'Classics/' + currentFilenames[titleTwo]
+    #store word counts of files
+    res1 = wordCount(book1)
+    res2 = wordCount(book2)
+    wC1 = res1[0]
+    wC2 = res2[0]
+    #store all unique words
+    uwords1 = res1[1]
+    uwords2 = res2[1]
+    #get len of unique words
+    numUs1 = len(uwords1)
+    numUs2 = len(uwords2)
+    #commonW gives
+    commonW = uwordcomp(uwords1, uwords2)
+    print("")
+    print(book1, "Word Count:", wC1, "Unique Words:", numUs1)
+    print(book1, "The percentage of words that are unique:", (numUs1/wC1) * 100)
+    print("--")
+    print(book2, "Word Count:", wC2, "Unique Words:", numUs2)
+    print(book2, "The percentage of words that are unique:", (numUs2/wC2) * 100)
+    print("--")
+    print("Unique words in common:", len(commonW))
+    words = 0
+    while words < 10:
+        print(commonW[random.randint(0, len(commonW))])
+        words = words + 1
+    print("--")
 
 def main():
   #main will be used for asking user purpose and then calling for purpose
   print("Lizer is an application intended to analyze .txt files")
   print("")
-  print("For self-analysis, enter 1")
-  print("For multi-author comparison, enter 2")
-  print("Compare with the classics: 3")
+  print("Place your files in the folder you are running Lizer from, or use some of the classics provided.")
   print("")
-  #unput is what they type next
-  #initializing user input
-  unput = input("Choose an option by using the corresponding number: ")
-  #making sure they're actually selecting one of three menu items
-  while inRange(unput, 3) is False:
-    unput = input("Choose an option by using the corresponding whole number: ")
-    
-  unput = int(unput)
-  
-  if unput == 1:
-    print("Initalizing single-author analysis")
-    oneAuthorComparison()
-  if unput == 3:
-    print("To be honest, I only have 1 and 2 available right now.")
-    print("Initializing multi-author comparison")
-    print("")
-    twoAuthorComparison()
+  classicsComparison()
 main()
