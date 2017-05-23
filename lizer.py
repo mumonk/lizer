@@ -1,6 +1,7 @@
 #"C:\ProgramData\Anaconda3
 # coding: utf8
 import re
+import string
 import random
 import os, sys
 
@@ -50,8 +51,11 @@ def uwordcomp(s1, s2):
     least = s1
   #initialize new set for words in common
   common = []
+  rmPunc = str.maketrans('', '', string.punctuation)
+  
   for word in great:
     word = word.strip()
+    word = word.translate(rmPunc)
     if word in least and len(word) > 3:
       common.append(word)
   return(common)
