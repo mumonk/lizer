@@ -21,24 +21,36 @@ def inRange(item, range):
     if tryItem < 1 or tryItem > range:
         return False
 def wordCount(book):
-  results = []
+  #opening the target file and the various words that ought not be counted as unique
   in_file = open(book, "r", encoding="utf-8")
-  wordcount = 0
-  uwordlist = []
-  uwordcount = 0
-  for line in in_file:
-    wordcount = wordcount + counter("(\S)", line)
-    #redl is the line split into a list to iterate through, ignoring spare characters
-    redline = line.split()
-    for entry in redline:
-        uwordlist.append(entry)
-  uwordlist = set(uwordlist)
-  #count uniq words using length of list
-  uwordcount = len(uwordlist)
-  return [wordcount, uwordlist]
+  ignoredFile = open('IgnoredWords.txt', 'r', encoding="utf-8")
+  #creating a set of words to be ignored
+  ignoredWords = set()
+  for line in ignoredFile:
+    ignoredWords.add(line.strip())
+    
 
-  return wordcount
+  #rmPunc will remove puncutation from strings
+  rmPunc = str.maketrans('', '', string.punctuation)
+  wordcount = 0
+  uWordList = []
+  for line in in_file:
+    #words are counted by the number of whitespaces in each line
+    dividedLine = line.split()
+    wordcount = wordcount + len(dividedLine)
+    #redl is the line split into a list to iterate through, ignoring spare characters
+    for entry in dividedLine:
+        #standardize words and remove punctuation
+        entry = entry.lower()
+        entry = entry.translate(rmPunc)
+        entry.strip()
+        if entry not in ignoredWords:
+            uWordList.append(entry)
+  uWordSet = set(uWordList)
   in_file.close()
+  ignoredFile.close()
+  return [wordcount, uWordSet]
+
 
 def uwordcomp(s1, s2):
   #sets 1 and 2 are compared to see words in common
@@ -51,12 +63,8 @@ def uwordcomp(s1, s2):
     least = s1
   #initialize new set for words in common
   common = []
-  rmPunc = str.maketrans('', '', string.punctuation)
-  
   for word in great:
-    word = word.strip()
-    word = word.translate(rmPunc)
-    if word in least and len(word) > 3:
+    if word in least:
       common.append(word)
   return(common)
 def classicsComparison():
@@ -134,7 +142,7 @@ def classicsComparison():
     print("--")
 
 def main():
-  #main will be used for asking user purpose and then calling for purpose
+  #main calls specific functions, as defined by the user
   print("Lizer is an application intended to analyze .txt files")
   print("")
   print("Place your files in the folder you are running Lizer from, or use some of the classics provided.")
