@@ -4,11 +4,7 @@ import re
 import string
 import random
 import os, sys
-
-def counter(value, unit):
-   #find all non-whitespace
-   list = re.findall(value , unit)
-   return len(list)
+from collections import Counter
 
 def inRange(item, range):
     #function takes a given input and checks if is a number within an implicit range
@@ -46,7 +42,8 @@ def wordCount(book):
         entry.strip()
         if entry not in ignoredWords:
             uWordList.append(entry)
-  uWordSet = set(uWordList)
+  #a Counter is a dict that tallies the frequency of set items in a list
+  uWordSet = Counter(uWordList)
   in_file.close()
   ignoredFile.close()
   return [wordcount, uWordSet]
@@ -61,12 +58,17 @@ def uwordcomp(s1, s2):
   else:
     great = s2
     least = s1
-  #initialize new set for words in common
-  common = []
-  for word in great:
-    if word in least:
-      common.append(word)
-  return(common)
+  #a Counter object can be broken into pairs
+  greatestPairs = great.items()
+  leastWords = set(least)
+  sharedWords = []
+  #I take a pair from Greatest and check if it is in Least. If so, it gets kept.
+  for freqPair in greatestPairs:
+    if freqPair[0] in leastWords:
+        sharedWords.append(freqPair)
+  #convert the list of pairs into a dict and then add to the least
+  least.update(dict(sharedWords))
+  return(least)
 def classicsComparison():
     #listing all .txt. in the classics directory
     currentFolder = os.getcwd()
@@ -125,7 +127,7 @@ def classicsComparison():
     #get len of unique words
     numUs1 = len(uwords1)
     numUs2 = len(uwords2)
-    #commonW gives
+    #commonW is a Counter object
     commonW = uwordcomp(uwords1, uwords2)
     print("")
     print(book1, "Word Count:", wC1, "Unique Words:", numUs1)
@@ -135,10 +137,7 @@ def classicsComparison():
     print(book2, "The percentage of words that are unique:", (numUs2/wC2) * 100)
     print("--")
     print("Unique words in common:", len(commonW))
-    words = 0
-    while words < 10:
-        print(commonW[random.randint(0, len(commonW))])
-        words = words + 1
+    print(commonW.most_common(20))
     print("--")
 
 def main():
