@@ -67,8 +67,8 @@ def uwordcomp(s1, s2):
     if freqPair[0] in leastWords:
         sharedWords.append(freqPair)
   #convert the list of pairs into a dict and then add to the least
-  least.update(dict(sharedWords))
-  return(least)
+  dict(sharedWords)
+  return(Counter(dict(sharedWords)))
 def classicsComparison():
     #listing all .txt. in the classics directory
     currentFolder = os.getcwd()
