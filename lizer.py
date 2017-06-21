@@ -16,6 +16,18 @@ def inRange(item, range):
         
     if tryItem < 1 or tryItem > range:
         return False
+def getLengthStats(thisCounter):
+    #count length of words in counter and return descriptors
+    pairs = thisCounter.items()
+    lengths = []
+    for word in pairs:
+        lengths.append(len(word[0]))
+    averaged = sum(lengths) / len(lengths)
+    wordLengths = Counter(lengths)
+    mostCommon = wordLengths.most_common(5)
+    leastCommon = wordLengths.most_common()[:-5:-1]
+    return [round(averaged, 2), mostCommon, leastCommon]
+
 def wordCount(book):
   #opening the target file and the various words that ought not be counted as unique
   in_file = open(book, "r", encoding="utf-8")
@@ -50,6 +62,8 @@ def wordCount(book):
 
 
 def uwordcomp(s1, s2):
+  getLengthStats(s1)
+  getLengthStats(s2)
   #sets 1 and 2 are compared to see words in common
   #great and least are used to prevent length errors in iteration
   if len(s1) > len(s2):
@@ -129,15 +143,21 @@ def classicsComparison():
     numUs2 = len(uwords2)
     #commonW is a Counter object
     commonW = uwordcomp(uwords1, uwords2)
+    b1Length = getLengthStats(uwords1)
+    b2Length = getLengthStats(uwords2)
     print("")
     print(book1, "Word Count:", wC1, "Unique Words:", numUs1)
-    print(book1, "The percentage of words that are unique:", (numUs1/wC1) * 100)
+    print(book1, "The percentage of words that are unique:", (round((numUs1/wC1), 4) * 100))
+    print("Average Word Length:", b1Length[0],"\nMost Common Lengths:", b1Length[1], "\nLeast Common Lengths:", b1Length[2])
     print("--")
     print(book2, "Word Count:", wC2, "Unique Words:", numUs2)
-    print(book2, "The percentage of words that are unique:", (numUs2/wC2) * 100)
+    print(book2, "The percentage of words that are unique:", (round((numUs2/wC2), 4) * 100))
+    print("Average Word Length:", b2Length[0],"\nMost Common Lengths:", b2Length[1], "\nLeast Common Lengths:", b2Length[2])
     print("--")
     print("Unique words in common:", len(commonW))
-    print(commonW.most_common(20))
+    print("Top 20 Shared Words:")
+    for pair in commonW.most_common(20):
+        print(pair[0], ":", pair[1])
     print("--")
 
 def main():
