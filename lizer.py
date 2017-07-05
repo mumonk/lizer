@@ -27,7 +27,28 @@ def getLengthStats(thisCounter):
     mostCommon = wordLengths.most_common(5)
     leastCommon = wordLengths.most_common()[:-5:-1]
     return [round(averaged, 2), mostCommon, leastCommon]
-
+def copypasta (pastedText):
+  ignoredFile = open('IgnoredWords.txt', 'r', encoding="utf-8")
+  ignoredWords = set()
+  for line in ignoredFile:
+    ignoredWords.add(line.strip())
+  ignoredFile.close()
+  rmPunc = str.maketrans('', '', string.punctuation)
+  wordcount = 0
+  uWordList = []
+  dividedLine = pastedText.split()
+  wordcount = len(dividedLine)
+  #redl is the line split into a list to iterate through, ignoring spare characters
+  for entry in dividedLine:
+    #standardize words and remove punctuation
+    entry = entry.lower()
+    entry = entry.translate(rmPunc)
+    entry.strip()
+    if entry not in ignoredWords:
+      uWordList.append(entry)
+  uWordSet = Counter(uWordList)
+  ignoredFile.close()
+  return [wordcount, uWordSet]
 def wordCount(book):
   #opening the target file and the various words that ought not be counted as unique
   in_file = open(book, "r", encoding="utf-8")
@@ -36,7 +57,6 @@ def wordCount(book):
   ignoredWords = set()
   for line in ignoredFile:
     ignoredWords.add(line.strip())
-    
 
   #rmPunc will remove puncutation from strings
   rmPunc = str.maketrans('', '', string.punctuation)
@@ -59,8 +79,6 @@ def wordCount(book):
   in_file.close()
   ignoredFile.close()
   return [wordcount, uWordSet]
-
-
 def uwordcomp(s1, s2):
   getLengthStats(s1)
   getLengthStats(s2)
@@ -84,11 +102,16 @@ def uwordcomp(s1, s2):
   dict(sharedWords)
   return(Counter(dict(sharedWords)))
 def classicsComparison():
+    copypastaOne = False
+    copypastaTwo = False
+    
     #listing all .txt. in the classics directory
     currentFolder = os.getcwd()
     currentFilenames = []
     counter = 1
+    
     print("Plaintext files in project folder:")
+    
     for alphaFile in os.listdir(currentFolder):
         if alphaFile[-4:] == '.txt' and alphaFile!= 'IgnoredWords.txt':
             currentFilenames.append(alphaFile)
@@ -99,40 +122,62 @@ def classicsComparison():
     classicsFolder = currentFolder + "/Classics"
     print("\n----------")
     print("A selection of classic writings from the Public Domain:")
+    
     for betaFile in os.listdir(classicsFolder):
         if betaFile[-4:] == ".txt":
             currentFilenames.append(betaFile)
             print(str(counter) + '. ' + betaFile)
             counter += 1
-    titleOne = input("Enter the number of the first file to analyze: ")
+    titleOne = input("Enter the number of the first file to analyze (or enter 'a' to paste from clipboard): ")
     while inRange(titleOne, len(currentFilenames)) is False:
+        if titleOne=='a':
+            copypastaOne = True
+            pastedText1 = input("Paste text to be analyzed here (right-click on Windows): ")
+            book1 = "Copied Text 1"
+            break
         titleOne = input("Choose an option by using the corresponding whole number: ")
     #subtraction to fit it to a zero index.
-    titleOne = int(titleOne) - 1
+    if copypastaOne == False:
+        titleOne = int(titleOne) - 1
+        book1 = currentFilenames[titleOne]
     
-    titleTwo = input("Enter the number of the second file to analyze: ")
+    titleTwo = input("Enter the number of the second file to analyze (or enter 'a' to paste from clipboard): ")
     while inRange(titleTwo, len(currentFilenames)) is False:
+        if titleTwo=='a':
+            copypastaTwo = True
+            pastedText2 = input("Paste text to be analyzed here (right-click on Windows): ")
+            book2 = "Copied Text 2"
+            break
         titleTwo = input("Choose an option by using the corresponding whole number: ")
-    
-    titleTwo = int(titleTwo) - 1
-    book1 = currentFilenames[titleOne]
-    book2 = currentFilenames[titleTwo]
+    if copypastaTwo == False:
+        titleTwo = int(titleTwo) - 1
+        book2 = currentFilenames[titleTwo]
     #determine whether to path the classics folder
     package_dir = os.path.dirname(os.path.abspath(__file__))
     
     if len(currentFilenames) > 6:
         #minus seven to re-index to zero
-        if titleOne <= len(currentFilenames) - 6:
-            book1 =  '/Classics/' + currentFilenames[titleOne]
-        if titleTwo <= len(currentFilenames) - 6:
-            book2 = '/Classics/' + currentFilenames[titleTwo]
+        if copypastaOne == False:
+            if titleOne <= len(currentFilenames) - 6:
+                book1 =  '/Classics/' + currentFilenames[titleOne]
+        if copypastaTwo == False:
+            if titleTwo <= len(currentFilenames) - 6:
+                book2 = '/Classics/' + currentFilenames[titleTwo]
             
     else:
-        book1 =  'Classics/' + currentFilenames[titleOne]
-        book2 = 'Classics/' + currentFilenames[titleTwo]
+        if copypastaOne == False:
+            book1 =  'Classics/' + currentFilenames[titleOne]
+        if copypastaTwo == False:
+            book2 = 'Classics/' + currentFilenames[titleTwo]
     #store word counts of files
-    res1 = wordCount(book1)
-    res2 = wordCount(book2)
+    if copypastaOne == False:
+        res1 = wordCount(book1)
+    else:
+        res1 = copypasta(pastedText1)
+    if copypastaTwo == False:
+        res2 = wordCount(book2)
+    else:
+        res2 = copypasta(pastedText2)
     wC1 = res1[0]
     wC2 = res2[0]
     #store all unique words
@@ -164,7 +209,7 @@ def main():
   #main calls specific functions, as defined by the user
   print("Lizer is an application intended to analyze .txt files")
   print("")
-  print("Place your files in the folder you are running Lizer from, or use some of the classics provided.")
+  print("Place your files in the folder you are running Lizer from, paste from your clipboard, or use some of the literary classics provided.")
   print("")
   classicsComparison()
 main()
