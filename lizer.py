@@ -5,6 +5,7 @@ import string
 import random
 import os, sys
 from collections import Counter
+import pickle
 
 def inRange(item, range):
     #function takes a given input and checks if is a number within an implicit range
@@ -158,10 +159,10 @@ def classicsComparison():
     if len(currentFilenames) > 6:
         #minus seven to re-index to zero
         if copypastaOne == False:
-            if titleOne <= len(currentFilenames) - 6:
+            if titleOne >= len(currentFilenames) - 6:
                 book1 =  '/Classics/' + currentFilenames[titleOne]
         if copypastaTwo == False:
-            if titleTwo <= len(currentFilenames) - 6:
+            if titleTwo >= len(currentFilenames) - 6:
                 book2 = '/Classics/' + currentFilenames[titleTwo]
             
     else:
@@ -205,11 +206,54 @@ def classicsComparison():
         print(pair[0], ":", pair[1])
     print("--")
 
+def singleAuthor():
+  pasted = False
+  titleOne = -1
+  singleInput = 0
+  while singleInput != '1' and singleInput != '2':
+    singleInput = input("1 - Select from project folder, 2 - paste text from the clipboard:")
+  if singleInput == '1':
+    currentFolder = os.getcwd()
+    currentFilenames = []
+    counter = 1
+    print("Plaintext files in project folder:")
+    for alphaFile in os.listdir(currentFolder):
+      if alphaFile[-4:] == '.txt' and alphaFile!= 'IgnoredWords.txt':
+        currentFilenames.append(alphaFile)
+        print(str(counter) + '. ' + alphaFile)
+        counter += 1
+    while inRange(titleOne, len(currentFilenames)) is False:
+        titleOne = input("Choose an option by using the corresponding whole number: ")
+    titleOne = int(titleOne) - 1
+    book1 = currentFilenames[titleOne]
+    results = [book1, wordCount(book1)]
+  elif singleInput == '2':
+    pasted = True
+    pastedText = ''
+    while pastedText == '':
+      pastedText = input("Paste your text(rightclick on Windows, Command + V on Mac): ")
+    results = ['copied text', copypasta(pastedText)]
+    
+  b1Length = getLengthStats(results[1][1])
+  wC1 = results[1][0]
+  numUs1 = len(results[1][1])
+  print("")
+  print(results[0], "Word Count:", wC1, "Unique Words:", numUs1)
+  print(results[0], "The percentage of words that are unique:", (round((numUs1/wC1), 4) * 100))
+  for pair in results[1][1].most_common(20):
+        print(pair[0], ":", pair[1])
+  print("Average Word Length:", b1Length[0],"\nMost Common Lengths:", b1Length[1], "\nLeast Common Lengths:", b1Length[2])
 def main():
   #main calls specific functions, as defined by the user
   print("Lizer is an application intended to analyze .txt files")
   print("")
   print("Place your files in the folder you are running Lizer from, paste from your clipboard, or use some of the literary classics provided.")
   print("")
-  classicsComparison()
+  selected = 0
+  while selected != '1' and selected != '2':
+    selected = input("Enter 1 to compare one file, Enter 2 to compare multiple files : ")
+  if selected == "2":
+    classicsComparison()
+  elif selected == "1":
+    singleAuthor()
 main()
