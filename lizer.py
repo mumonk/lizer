@@ -103,6 +103,7 @@ def uwordcomp(s1, s2):
   dict(sharedWords)
   return(Counter(dict(sharedWords)))
 def classicsComparison():
+    #these variables indicate whether a provided text is given through pasting
     copypastaOne = False
     copypastaTwo = False
     
@@ -206,12 +207,62 @@ def classicsComparison():
         print(pair[0], ":", pair[1])
     print("--")
 
+def authorProfile():
+  rmPunc = str.maketrans('', '', string.punctuation)
+  print("\nEnter 'A' to access an existing profile.")
+  print("Enter 'B' to create a new profile.")
+  starter = input("Enter C to return to the main menu: ")
+  cased = starter.upper()
+  if cased == "A":
+    #add to existing profile
+    currentFolder = os.getcwd()
+    currentFilenames = []
+    counter = 1
+    print("\nProfiles in current folder:")
+    for alphaFile in os.listdir(currentFolder):
+      if alphaFile[-2:] == '.p':
+        currentFilenames.append(alphaFile)
+        print(str(counter) + '. ' + alphaFile)
+        counter += 1
+    profileOne = input("Enter the number of the profile to analyze: ")
+    while inRange(profileOne, len(currentFilenames)) is False:
+        profileOne = input("Choose an option by using the corresponding whole number: ")
+    #subtraction to fit it to a zero index.
+    profileOne = int(profileOne) - 1
+    selectedProfile = currentFilenames[profileOne]
+    selectionA = input("\nEnter 'A' to add a file\nEnter 'B' to analyze this profile: ")
+    selectionA = selectionA.upper()
+    if selectionA == "A":
+        results = singleAuthor()
+        resultList = pickle.load(open(selectedProfile, "rb"))
+        resultList.append(results)
+        pickle.dump(resultList, open(selectedProfile, "wb"))
+        print(results[0], 'added!')
+    if selectionA == "B":
+        print("Analyzing current profile...")
+        #TODO: Analyze the current profile
+  elif cased == "B":
+    #create new profile
+    #newName begins as too long
+    newName = input("Enter a name for the new profile: ")
+    deSpaced = newName.replace(" ", "")
+    newName = deSpaced.translate(rmPunc)
+    newName = newName + ".p"
+    pickle.dump([], open(newName, "wb"))
+    print(newName, 'created!\n')
+    
+    
+  elif cased == "C":
+    main()
+  authorProfile()
+
 def singleAuthor():
+  #three variables initialize the selection process
   pasted = False
   titleOne = -1
   singleInput = 0
   while singleInput != '1' and singleInput != '2':
-    singleInput = input("1 - Select from project folder, 2 - paste text from the clipboard:")
+    singleInput = input("\n1 - Select from project folder, 2 - paste text from the clipboard:")
   if singleInput == '1':
     currentFolder = os.getcwd()
     currentFilenames = []
@@ -232,28 +283,33 @@ def singleAuthor():
     pastedText = ''
     while pastedText == '':
       pastedText = input("Paste your text(rightclick on Windows, Command + V on Mac): ")
-    results = ['copied text', copypasta(pastedText)]
+    results = ['Copied Text', copypasta(pastedText)]
     
   b1Length = getLengthStats(results[1][1])
   wC1 = results[1][0]
   numUs1 = len(results[1][1])
+  book = results[0]
   print("")
-  print(results[0], "Word Count:", wC1, "Unique Words:", numUs1)
-  print(results[0], "The percentage of words that are unique:", (round((numUs1/wC1), 4) * 100))
+  print(book, "Word Count:", wC1, "Unique Words:", numUs1)
+  print(book, "The percentage of words that are unique:", (round((numUs1/wC1), 4) * 100))
   for pair in results[1][1].most_common(20):
         print(pair[0], ":", pair[1])
   print("Average Word Length:", b1Length[0],"\nMost Common Lengths:", b1Length[1], "\nLeast Common Lengths:", b1Length[2])
+  return(results)
 def main():
   #main calls specific functions, as defined by the user
   print("Lizer is an application intended to analyze .txt files")
   print("")
-  print("Place your files in the folder you are running Lizer from, paste from your clipboard, or use some of the literary classics provided.")
+  print("Place your files in the folder you are running Lizer from, \npaste from your clipboard, or use some of the literary classics provided.")
   print("")
   selected = 0
-  while selected != '1' and selected != '2':
-    selected = input("Enter 1 to compare one file, Enter 2 to compare multiple files : ")
+  while selected != '1' and selected != '2' and selected != "3":
+    selected = input("Enter 1 to analyze one file,\nEnter 2 to compare multiple files\nEnter 3 to access author profiles : ")
   if selected == "2":
     classicsComparison()
   elif selected == "1":
     singleAuthor()
+  elif selected == "3":
+    authorProfile()
+  
 main()
