@@ -194,11 +194,11 @@ def classicsComparison():
     b2Length = getLengthStats(uwords2)
     print("")
     print(book1, "Word Count:", wC1, "Unique Words:", numUs1)
-    print(book1, "The percentage of words that are unique:", (round((numUs1/wC1), 4) * 100))
+    print(book1, "The percentage of words that are unique:", (round((numUs1/wC1), 4) * 100), '%')
     print("Average Word Length:", b1Length[0],"\nMost Common Lengths:", b1Length[1], "\nLeast Common Lengths:", b1Length[2])
     print("--")
     print(book2, "Word Count:", wC2, "Unique Words:", numUs2)
-    print(book2, "The percentage of words that are unique:", (round((numUs2/wC2), 4) * 100))
+    print(book2, "The percentage of words that are unique:", (round((numUs2/wC2), 4) * 100), '%')
     print("Average Word Length:", b2Length[0],"\nMost Common Lengths:", b2Length[1], "\nLeast Common Lengths:", b2Length[2])
     print("--")
     print("Unique words in common:", len(commonW))
@@ -240,7 +240,9 @@ def authorProfile():
         print(results[0], 'added!')
     if selectionA == "B":
         print("Analyzing current profile...")
-        #TODO: Analyze the current profile
+        resultList = pickle.load(open(selectedProfile, "rb"))
+        for item in resultList:
+            print(item[0], ':', item[1][0], ':', len(item[1][1]))
   elif cased == "B":
     #create new profile
     #newName begins as too long
@@ -291,7 +293,7 @@ def singleAuthor():
   book = results[0]
   print("")
   print(book, "Word Count:", wC1, "Unique Words:", numUs1)
-  print(book, "The percentage of words that are unique:", (round((numUs1/wC1), 4) * 100))
+  print(book, "The percentage of words that are unique:", (round((numUs1/wC1), 4) * 100), '%')
   for pair in results[1][1].most_common(20):
         print(pair[0], ":", pair[1])
   print("Average Word Length:", b1Length[0],"\nMost Common Lengths:", b1Length[1], "\nLeast Common Lengths:", b1Length[2])
