@@ -3,6 +3,7 @@
 import re
 import string
 import random
+import statistics as stat
 import os, sys
 from collections import Counter
 import pickle
@@ -241,8 +242,19 @@ def authorProfile():
     if selectionA == "B":
         print("Analyzing current profile...")
         resultList = pickle.load(open(selectedProfile, "rb"))
+        wordCounts = []
+        vocabSize = []
+        percs = []
         for item in resultList:
-            print(item[0], ':', item[1][0], ':', len(item[1][1]))
+            title, wordcount, vocab = item[0], item[1][0], len(item[1][1])
+            print(title, ':', wordcount, ':', vocab, ':', round((vocab / wordcount)*100, 2))
+            wordCounts.append(wordcount)
+            vocabSize.append(vocab)
+            percs.append(100 * (vocab/wordcount))
+        print("Mean and Standard Deviation of Word Count :", round(stat.mean(wordCounts), 2), round(stat.pstdev(wordCounts), 2))
+        print("Vocabulary :", round(stat.mean(vocabSize), 2), round(stat.pstdev(vocabSize), 2))
+        print("Unique Word Percentages :", round(stat.mean(percs), 2), round(stat.pstdev(percs), 2))
+            
   elif cased == "B":
     #create new profile
     #newName begins as too long
