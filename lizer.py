@@ -1,5 +1,6 @@
 #"C:\ProgramData\Anaconda3
 # coding: utf8
+import collections
 import re
 import string
 import random
@@ -241,6 +242,7 @@ def authorProfile():
         print(results[0], 'added!')
     if selectionA == "B":
         print("Analyzing current profile...")
+        print("Title : Wordcount : Vocabulary Size : Unique Word Percentage")
         resultList = pickle.load(open(selectedProfile, "rb"))
         wordCounts = []
         vocabSize = []
@@ -251,10 +253,20 @@ def authorProfile():
             wordCounts.append(wordcount)
             vocabSize.append(vocab)
             percs.append(100 * (vocab/wordcount))
-        print("Mean and Standard Deviation of Word Count :", round(stat.mean(wordCounts), 2), round(stat.pstdev(wordCounts), 2))
-        print("Vocabulary :", round(stat.mean(vocabSize), 2), round(stat.pstdev(vocabSize), 2))
-        print("Unique Word Percentages :", round(stat.mean(percs), 2), round(stat.pstdev(percs), 2))
-            
+        #The coeffecient of variation provides an estimate of magnitude with the standard deviation    
+        wordMean = round(stat.mean(wordCounts), 2)
+        wordCoef = 100 * round(stat.pstdev(wordCounts)/wordMean, 2)
+        vocabMean = round(stat.mean(vocabSize), 2)
+        vocabCoef = 100 * round(stat.pstdev(vocabSize)/vocabMean, 2)
+        percMean = round(stat.mean(percs), 2)
+        percCoef = 100 * round(stat.pstdev(percs)/percMean, 2)
+        print("\nMean and Variation Coeffecient of Word Count :", wordMean, ":", str(wordCoef)+"%")
+        print("Vocabulary :", vocabMean, ":", str(vocabCoef)+"%")
+        print("Unique Word Percentages :", percMean , ":", str(percCoef)+"%")
+        
+        print("The most recent file added is", round( 100 *((wordCounts.pop() - wordMean) / wordMean), 2), 'percent longer than the average.')
+        print("The most recent file added is", round(percs.pop() - percMean, 2), 'percent more verbose than the average.') 
+        
   elif cased == "B":
     #create new profile
     #newName begins as too long
