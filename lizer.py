@@ -8,6 +8,7 @@ import statistics as stat
 import os, sys
 from collections import Counter
 import pickle
+import csv
 
 def inRange(item, range):
     #function takes a given input and checks if is a number within an implicit range
@@ -19,6 +20,7 @@ def inRange(item, range):
         
     if tryItem < 1 or tryItem > range:
         return False
+        
 def getLengthStats(thisCounter):
     #count length of words in counter and return descriptors
     pairs = thisCounter.items()
@@ -30,6 +32,7 @@ def getLengthStats(thisCounter):
     mostCommon = wordLengths.most_common(5)
     leastCommon = wordLengths.most_common()[:-5:-1]
     return [round(averaged, 2), mostCommon, leastCommon]
+    
 def copypasta (pastedText):
   ignoredFile = open('IgnoredWords.txt', 'r', encoding="utf-8")
   ignoredWords = set()
@@ -52,6 +55,7 @@ def copypasta (pastedText):
   uWordSet = Counter(uWordList)
   ignoredFile.close()
   return [wordcount, uWordSet]
+  
 def wordCount(book):
   #opening the target file and the various words that ought not be counted as unique
   in_file = open(book, "r", encoding="utf-8")
@@ -82,6 +86,7 @@ def wordCount(book):
   in_file.close()
   ignoredFile.close()
   return [wordcount, uWordSet]
+  
 def uwordcomp(s1, s2):
   getLengthStats(s1)
   getLengthStats(s2)
@@ -104,6 +109,7 @@ def uwordcomp(s1, s2):
   #convert the list of pairs into a dict and then add to the least
   dict(sharedWords)
   return(Counter(dict(sharedWords)))
+  
 def classicsComparison():
     #these variables indicate whether a provided text is given through pasting
     copypastaOne = False
@@ -232,7 +238,7 @@ def authorProfile():
     #subtraction to fit it to a zero index.
     profileOne = int(profileOne) - 1
     selectedProfile = currentFilenames[profileOne]
-    selectionA = input("\nEnter 'A' to add a file\nEnter 'B' to analyze this profile: ")
+    selectionA = input("\nEnter 'A' to add a file\nEnter 'B' to analyze this profile\nEnter 'C' to export current data: ")
     selectionA = selectionA.upper()
     if selectionA == "A":
         results = singleAuthor()
@@ -261,12 +267,22 @@ def authorProfile():
         percMean = round(stat.mean(percs), 2)
         percCoef = 100 * round(stat.pstdev(percs)/percMean, 2)
         print("\nMean and Variation Coeffecient of Word Count :", wordMean, ":", str(wordCoef)+"%")
-        print("Vocabulary :", vocabMean, ":", str(vocabCoef)+"%")
-        print("Unique Word Percentages :", percMean , ":", str(percCoef)+"%")
+        print("Mean Vocabulary and Variation:", vocabMean, ":", str(vocabCoef)+"%")
+        print("Mean Unique Word Percentage and Variation :", percMean , ":", str(percCoef)+"%")
         
-        print("The most recent file added is", round( 100 *((wordCounts.pop() - wordMean) / wordMean), 2), 'percent longer than the average.')
-        print("The most recent file added is", round(percs.pop() - percMean, 2), 'percent more verbose than the average.') 
-        
+        print("The most recent file added is", round( 100 *((wordCounts.pop() - wordMean) / wordMean), 2), 'percent different than average.')
+        print("The most recent file added is", round(percs.pop() - percMean, 2), 'percent different than average.') 
+    if selectionA == "C":
+        resultList = pickle.load(open(selectedProfile, "rb"))
+        csvList = []
+        for item in resultList:
+            csvList.append([item[0], item[1][0], len(item[1][1])])
+        writeFile = selectedProfile[:-2] + '.csv'
+        with open(writeFile, 'w', newline='') as csvfile:
+            exportWriter = csv.writer(csvfile)
+            exportWriter.writerow(['Title', 'WordCount', "Vocabulary"])
+            exportWriter.writerows(csvList)
+            
   elif cased == "B":
     #create new profile
     #newName begins as too long
@@ -322,6 +338,7 @@ def singleAuthor():
         print(pair[0], ":", pair[1])
   print("Average Word Length:", b1Length[0],"\nMost Common Lengths:", b1Length[1], "\nLeast Common Lengths:", b1Length[2])
   return(results)
+  
 def main():
   #main calls specific functions, as defined by the user
   print("Lizer is an application intended to analyze .txt files")
