@@ -52,9 +52,8 @@ def copypasta (pastedText):
     entry.strip()
     if entry not in ignoredWords:
       uWordList.append(entry)
-  uWordSet = Counter(uWordList)
   ignoredFile.close()
-  return [wordcount, uWordSet]
+  return [wordcount, Counter(uWordList)]
   
 def wordCount(book):
   #opening the target file and the various words that ought not be counted as unique
